@@ -1,0 +1,27 @@
+{
+  "skill_name": "llm-cost-audit",
+  "should_trigger": [
+    "our OpenAI bill doubled last month, figure out which feature is burning the tokens",
+    "we enabled prompt caching but cache_read_input_tokens is always 0, why",
+    "audit our LLM spend, here is a JSONL export of usage per request",
+    "which routes in this app cost the most in tokens? logs are in usage.jsonl",
+    "cached_tokens stays at zero on every chat completion even though the system prompt never changes",
+    "cut our Claude API costs without making the answers worse",
+    "what is our prompt cache hit rate per endpoint",
+    "finance wants to know cost per feature for our Gemini usage, we log usageMetadata",
+    "would switching the summariser to a cheaper model save money? here are last week's usage logs",
+    "we pay for cache writes on every request and never get a cache read"
+  ],
+  "should_not_trigger": [
+    "our AWS bill doubled last month, find which EC2 instances to downsize",
+    "the chat endpoint takes 9 seconds to respond, make the LLM call faster",
+    "write a system prompt for a support assistant",
+    "count how many tokens this markdown file is",
+    "estimate what a new summarisation feature will cost before we build it",
+    "we keep hitting 429 rate limits from the model API, add retries with backoff",
+    "add Redis caching in front of our product database queries",
+    "which model gives the best answers for legal document review",
+    "build a usage dashboard so we can bill our own customers per seat",
+    "migrate this code from the Chat Completions API to the Responses API"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "_readme": "PLACEHOLDER PRICES. Every number in this file is made up so that the examples run. They are not the prices of any provider or model. To use this file: copy it, replace each number with the current price per million tokens from your provider's pricing page, rename the models to the exact model strings in your logs, set the currency, and delete the \"placeholder\" line.",
+  "placeholder": true,
+  "currency": "EXAMPLE",
+  "unit": "per_million_tokens",
+  "models": {
+    "example-large": {
+      "input": 1000.0,
+      "cache_write": 1200.0,
+      "cache_read": 100.0,
+      "output": 4000.0
+    },
+    "example-small": {
+      "input": 100.0,
+      "cache_write": 120.0,
+      "cache_read": 10.0,
+      "output": 400.0
+    }
+  }
+}

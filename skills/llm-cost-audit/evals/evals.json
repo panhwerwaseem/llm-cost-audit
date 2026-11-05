@@ -1,0 +1,59 @@
+{
+  "skill_name": "llm-cost-audit",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our model bill for the support bot jumped after last week's release and nobody knows why. We turned prompt caching on a month ago so it should be cheap. One morning of usage records is in evals/files/broken-cache/usage.jsonl and I captured six request bodies per route in evals/files/broken-cache/requests.jsonl (the policy text is shortened in the capture). What is going on and what do we fix?",
+      "expected_output": "The agent runs usage_report.py on the usage log before recommending anything, reports that the support-chat route (example-large) wrote 125,040 cache tokens over 24 calls and read none back while faq-answer has a 92.5% cache-read share, then runs prefix_stability.py on the request bodies and names the cause: a 'Current time' timestamp inside system[0].text (character 81) that differs in all six requests. It recommends moving the timestamp out of the cached system prompt (for example into the latest user message), states no money figure because no price table was supplied, and says the fix counts as verified only when a new usage log shows cache-read tokens on support-chat.",
+      "files": [
+        "evals/files/broken-cache/usage.jsonl",
+        "evals/files/broken-cache/requests.jsonl"
+      ],
+      "assertions": [
+        "The agent ran usage_report.py on the usage log before making any recommendation",
+        "The report states that support-chat wrote about 125,040 cache-write tokens across 24 calls with zero cache-read tokens",
+        "The agent ran prefix_stability.py on the captured request bodies and named the timestamp in the system prompt (system[0].text, 'Current time') as the point where requests diverge",
+        "The recommended fix moves or removes the timestamp so the system prompt is identical across requests; it does not recommend switching model, disabling caching as the first step, or shortening the policy text",
+        "The faq-answer route is not reported as a problem",
+        "The agent stated no price and no cost in currency, or explicitly said it cannot without a price table from the user",
+        "The agent said the fix must be confirmed by measuring a new usage log for cache-read tokens on support-chat, and did not claim the problem is already fixed"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Here is a day of usage from our help-centre app: evals/files/mixed-waste/usage.jsonl, plus a few captured requests in evals/files/mixed-waste/requests.jsonl. Rank where we are wasting tokens. My manager wants a dollar figure for each item, so just use the prices in assets/prices.example.json.",
+      "expected_output": "The agent runs usage_report.py and reports the ranked findings with their measured tokens: search-answer has 212,055 uncached input tokens over 30 calls with no cache activity (medium), classify-ticket repeats 14 of its 20 calls (medium), release-notes is output-heavy with 23,716 output tokens against 5,508 prompt tokens (info), and search-answer holds most of the spend (info). It runs prefix_stability.py and finds a Request-ID UUID at the start of the system message of search-answer (messages[0].content, character 12). It refuses to present dollar figures from prices.example.json as real because that file is marked as a placeholder with made-up numbers, and asks for the provider's current prices or the contract rates instead. It does not present the 212,055 tokens as the saving: the saving is bounded by the shared prefix.",
+      "files": [
+        "evals/files/mixed-waste/usage.jsonl",
+        "evals/files/mixed-waste/requests.jsonl",
+        "assets/prices.example.json"
+      ],
+      "assertions": [
+        "The agent ran usage_report.py and listed the search-answer finding with about 212,055 uncached input tokens over 30 calls",
+        "The agent reported that 14 of 20 classify-ticket calls repeat an earlier request, and asked or noted whether the repeats are deliberate before recommending a response cache",
+        "The agent identified release-notes as output-heavy and did not recommend prompt caching as the fix for it",
+        "The agent ran prefix_stability.py and named the Request-ID (a UUID) at the start of the system message as the reason search-answer requests share almost no prefix",
+        "The agent did not present any figure computed from assets/prices.example.json as a real dollar amount; it said the file holds placeholder prices and asked the user for real ones",
+        "The agent did not state any model price from its own memory",
+        "The agent did not claim that all 212,055 uncached input tokens would be saved by caching"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Finance wants 30% off our LLM bill this quarter. The quickest way is to move support-chat from example-large to example-small, right? Please confirm and tell me how much we save. Usage log: evals/files/healthy/usage.jsonl. Sample requests: evals/files/healthy/requests.jsonl.",
+      "expected_output": "The agent measures first. usage_report.py reports no findings: overall cache-read share is 75.4% and support-chat reads 90.0% of its prompt from cache. prefix_stability.py reports a stable prefix for support-chat. The agent says there is no waste to remove on these routes, does not invent a problem, and does not confirm the model switch: it states that a smaller model can change answer quality, that an eval on real support-chat traffic is required before switching, that cache entries are per model, and that it cannot state a saving without a price table from the user. It leaves the decision to the user.",
+      "files": [
+        "evals/files/healthy/usage.jsonl",
+        "evals/files/healthy/requests.jsonl"
+      ],
+      "assertions": [
+        "The agent ran usage_report.py before answering the question about the model switch",
+        "The agent reported that the usage log shows no waste findings and that caching is working (support-chat cache-read share about 90%)",
+        "The agent did not report a caching problem, an unstable prefix, or any other waste that the scripts did not find",
+        "The agent did not confirm the model switch as the right move; it flagged that output quality can change and required an eval on the route's real traffic first",
+        "The agent gave no saving in money and no percentage saving for the model switch, or said it cannot without the user's price table",
+        "The agent did not state any model price from its own memory"
+      ]
+    }
+  ]
+}

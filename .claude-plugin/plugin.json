@@ -1,0 +1,12 @@
+{
+  "name": "llm-cost-audit",
+  "description": "Audits an LLM application's token spend and prompt-cache hit rate from real usage logs, for any provider, and finds where request prefixes stop matching.",
+  "author": {
+    "name": "Muhammad Waseem Panhwar",
+    "url": "https://github.com/panhwerwaseem"
+  },
+  "homepage": "https://github.com/panhwerwaseem/llm-cost-audit",
+  "repository": "https://github.com/panhwerwaseem/llm-cost-audit",
+  "license": "MIT",
+  "keywords": ["llm", "cost", "prompt-caching", "tokens", "agent-skills"]
+}
